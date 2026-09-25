@@ -1,0 +1,6 @@
+streamlit
+groq
+scikit-learn
+numpy
+pytesseract
+pillow
