@@ -25,7 +25,7 @@ else:
     st.sidebar.warning("Por favor, ingresa tu API Key para usar los modelos de Groq.")
 
 st.sidebar.markdown("---")
-menu = st.sidebar.radio(
+menu = st.sidebar.options = st.sidebar.radio(
     "Navegación",
     ["1. Tokenización y Colores", "2. Bag of Words", "3. Similitud de Coseno", "4. Groq Playground & Modelos", "5. OCR + Prompt Generator"]
 )
@@ -118,24 +118,26 @@ elif menu == "3. Similitud de Coseno":
 
 # --- MÓDULO 4: GROQ PLAYGROUND & MODELOS ---
 elif menu == "4. Groq Playground & Modelos":
-    st.header("🚀 Groq Playground & Catálogo de Modelos")
-    st.write("Interactúa con los modelos oficiales disponibles en la API de Groq ajustando parámetros avanzados.")
+    st.header("🚀 Groq Playground & Catálogo de Modelos (Incluye GPT & Llama)")
+    st.write("Interactúa con modelos avanzados disponibles mediante la API de Groq ajustando temperatura, tokens máximos y otros parámetros.")
 
+    # Catálogo que incluye modelos open-weights tipo GPT (ej. openai/gpt-oss-120b) y modelos open-source de Llama / Mixtral
     groq_models = {
-        "Llama 3 8B (Versátil)": "llama3-8b-8192",
-        "Llama 3 70B (Avanzado)": "llama3-70b-8192",
-        "Mixtral 8x7B (Balanceado)": "mixtral-8x7b-32768",
-        "Gemma 7B (Ligero)": "gemma-7b-it"
+        "OpenAI GPT-OSS (120B - Alto Razonamiento)": "openai/gpt-oss-120b",
+        "OpenAI GPT-OSS (20B - Ligero)": "openai/gpt-oss-20b",
+        "Llama 3.3 70B (Versátil)": "llama-3.3-70b-versatile",
+        "Llama 3.1 8B (Instantáneo)": "llama-3.1-8b-instant",
+        "Mixtral 8x7B (Balanceado)": "mixtral-8x7b-32768"
     }
 
-    selected_model_name = st.selectbox("Selecciona un Modelo Groq:", list(groq_models.keys()))
+    selected_model_name = st.selectbox("Selecciona un Modelo:", list(groq_models.keys()))
     model_id = groq_models[selected_model_name]
 
     col1, col2 = st.columns(2)
     with col1:
-        temperature = st.slider("Temperatura (Creatividad)", 0.0, 2.0, 0.7, 0.1)
+        temperature = st.slider("Temperatura (Creatividad / Aleatoriedad)", 0.0, 2.0, 0.7, 0.1)
     with col2:
-        max_tokens = st.slider("Max Tokens (Longitud)", 100, 4000, 1024, 100)
+        max_tokens = st.slider("Max Tokens (Longitud máxima de respuesta)", 100, 4000, 1024, 100)
 
     prompt = st.text_area("Escribe tu Prompt:", "Explica brevemente qué es la computación cuántica.")
 
@@ -165,7 +167,6 @@ elif menu == "5. OCR + Prompt Generator":
 
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
-        # Corrección aplicada aquí: use_container_width en lugar de use_column_width
         st.image(image, caption="Imagen cargada", use_container_width=True)
 
         if st.button("Extraer texto con OCR"):
@@ -175,7 +176,7 @@ elif menu == "5. OCR + Prompt Generator":
                 st.text_area("Resultado OCR:", extracted_text, height=150)
                 st.session_state["extracted_ocr_text"] = extracted_text
             except Exception as e:
-                st.error(f"Error al procesar el OCR (asegúrate de tener Tesseract instalado): {e}")
+                st.error(f"Error al procesar el OCR (asegúrate de tener Tesseract instalado y en el PATH): {e}")
 
     if "extracted_ocr_text" in st.session_state and st.session_state["extracted_ocr_text"]:
         st.markdown("---")
@@ -192,7 +193,7 @@ elif menu == "5. OCR + Prompt Generator":
                     client = Groq(api_key=api_key_input)
                     chat_completion = client.chat.completions.create(
                         messages=[{"role": "user", "content": full_prompt}],
-                        model="llama3-8b-8192",
+                        model="llama-3.1-8b-instant",
                         temperature=0.5
                     )
                     st.subheader("Respuesta Ampliada:")
