@@ -25,7 +25,7 @@ else:
     st.sidebar.warning("Por favor, ingresa tu API Key para usar los modelos de Groq.")
 
 st.sidebar.markdown("---")
-menu = st.sidebar.options = st.sidebar.radio(
+menu = st.sidebar.radio(
     "Navegación",
     ["1. Tokenización y Colores", "2. Bag of Words", "3. Similitud de Coseno", "4. Groq Playground & Modelos", "5. OCR + Prompt Generator"]
 )
@@ -37,7 +37,6 @@ if menu == "1. Tokenización y Colores":
 
     text_input = st.text_area("Ingresa un texto para tokenizar:", "La inteligencia artificial generativa transforma el desarrollo de software.")
     
-    # Selector de esquema simple basado en espacios/caracteres o simulación de tokens
     schema = st.selectbox("Selecciona el esquema de tokenización", ["Por Palabras (Whitespace)", "Por Caracteres", "Simulación Subword (N-grams)"])
 
     if st.button("Tokenizar"):
@@ -46,12 +45,10 @@ if menu == "1. Tokenización y Colores":
         elif schema == "Por Caracteres":
             tokens = list(text_input)
         else:
-            # Simulación simple de subwords dividiendo cada 4 caracteres o palabras
             tokens = [word[i:i+4] for word in text_input.split() for i in range(0, len(word), 4)]
 
         st.subheader("Resultados:")
         
-        # Mostrar Token IDs simulados
         token_ids = [hash(t) % 10000 for t in tokens]
         
         col1, col2 = st.columns(2)
@@ -59,7 +56,6 @@ if menu == "1. Tokenización y Colores":
             st.markdown(f"**Total de tokens:** {len(tokens)}")
             st.write("**Tokens IDs (Hash simulado):**", token_ids)
 
-        # Mostrar tokens con colores
         st.markdown("### Visualización de Tokens con Colores")
         colors = ["#FF5733", "#33FF57", "#3357FF", "#F3FF33", "#FF33F3", "#33FFF0"]
         
@@ -125,7 +121,6 @@ elif menu == "4. Groq Playground & Modelos":
     st.header("🚀 Groq Playground & Catálogo de Modelos")
     st.write("Interactúa con los modelos oficiales disponibles en la API de Groq ajustando parámetros avanzados.")
 
-    # Catálogo de modelos "No llama" (No usar GPT)
     groq_models = {
         "Llama 3 8B (Versátil)": "llama3-8b-8192",
         "Llama 3 70B (Avanzado)": "llama3-70b-8192",
@@ -136,7 +131,6 @@ elif menu == "4. Groq Playground & Modelos":
     selected_model_name = st.selectbox("Selecciona un Modelo Groq:", list(groq_models.keys()))
     model_id = groq_models[selected_model_name]
 
-    # Parámetros avanzados
     col1, col2 = st.columns(2)
     with col1:
         temperature = st.slider("Temperatura (Creatividad)", 0.0, 2.0, 0.7, 0.1)
@@ -171,7 +165,8 @@ elif menu == "5. OCR + Prompt Generator":
 
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
-        st.image(image, caption="Imagen cargada", use_column_width=True)
+        # Corrección aplicada aquí: use_container_width en lugar de use_column_width
+        st.image(image, caption="Imagen cargada", use_container_width=True)
 
         if st.button("Extraer texto con OCR"):
             try:
@@ -182,7 +177,6 @@ elif menu == "5. OCR + Prompt Generator":
             except Exception as e:
                 st.error(f"Error al procesar el OCR (asegúrate de tener Tesseract instalado): {e}")
 
-    # Si ya hay texto extraído por OCR, permitir usarlo como prompt
     if "extracted_ocr_text" in st.session_state and st.session_state["extracted_ocr_text"]:
         st.markdown("---")
         st.subheader("Ampliar respuesta usando el texto del OCR")
